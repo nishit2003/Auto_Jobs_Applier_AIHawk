@@ -121,13 +121,21 @@ self_identification:
 
 legal_authorization:
   eu_work_authorization: "Yes"
-  us_work_authorization: "Yes"
+  us_work_authorization: "No"
   requires_us_visa: "Yes"
   requires_us_sponsorship: "Yes"
   requires_eu_visa: "Yes"
   legally_allowed_to_work_in_eu: "Yes"
   legally_allowed_to_work_in_us: "Yes"
   requires_eu_sponsorship: "Yes"
+  canada_work_authorization: "No"
+  requires_canada_visa: "Yes"
+  legally_allowed_to_work_in_canada: "No"
+  requires_canada_sponsorship: "Yes"
+  uk_work_authorization: "No"
+  requires_uk_visa: "Yes"
+  legally_allowed_to_work_in_uk: "No"
+  requires_uk_sponsorship: "Yes"
 
 work_preferences:
   remote_work: "Yes"

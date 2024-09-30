@@ -24,9 +24,7 @@ date:
   24 hours: true
 
 positions:
-  - Software Tester
-  - Quality Assurance Engineer
-  - Test Automation Engineer
+  - 2025
   - Software Developer
   - University Graduate
   - Software Engineer
@@ -42,7 +40,10 @@ positions:
   - Junior Front End Developer
   - Junior Back End Developer
   - Junior Full Stack Developer
-  - Junior Software Engineer
+  - Junior Software Engineer 
+  - Software Tester
+  - Quality Assurance Engineer
+  - Test Automation Engineer
 
 locations:
   - USA
@@ -52,3 +53,10 @@ distance: 100
 companyBlacklist:
    
 titleBlacklist:
+
+job_applicants_threshold:
+  min_applicants: 0
+  max_applicants: 100
+
+llm_model_type: openai
+llm_model: 'gpt-4o-mini'
