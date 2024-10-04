@@ -25,25 +25,6 @@ date:
 
 positions:
   - 2025 Graduate Software Engineer
-  - Software Developer
-  - University Graduate
-  - Software Engineer
-  - Entry Level Software Engineer
-  - Web Designer
-  - Web Developer
-  - Front End Developer
-  - Back End Developer
-  - Full Stack Developer
-  - Junior Developer
-  - Junior Software Developer
-  - Junior Web Developer
-  - Junior Front End Developer
-  - Junior Back End Developer
-  - Junior Full Stack Developer
-  - Junior Software Engineer 
-  - Software Tester
-  - Quality Assurance Engineer
-  - Test Automation Engineer
 
 locations:
   - USA
@@ -51,7 +32,7 @@ locations:
 distance: 100
 
 companyBlacklist:
-   
+
 titleBlacklist:
 
 job_applicants_threshold:
@@ -59,4 +40,4 @@ job_applicants_threshold:
   max_applicants: 100
 
 llm_model_type: openai
-llm_model: 'gpt-4o-mini'
+llm_model: "gpt-4o-mini"
