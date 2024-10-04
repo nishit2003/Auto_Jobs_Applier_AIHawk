@@ -5,6 +5,7 @@ personal_information:
   country: "USA"
   city: "Cincinnati"
   address: "2404 Ohio Ave"
+  zip_code: "45219"
   phone_prefix: "+1"
   phone: "6028153837"
   email: "grovernt@mail.uc.edu"
