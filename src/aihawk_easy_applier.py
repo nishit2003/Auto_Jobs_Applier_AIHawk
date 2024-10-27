@@ -11,6 +11,7 @@ from httpx import HTTPStatusError
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from reportlab.pdfbase.pdfmetrics import stringWidth
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -34,6 +35,7 @@ class AIHawkEasyApplier:
         self.gpt_answerer = gpt_answerer
         self.resume_generator_manager = resume_generator_manager
         self.all_data = self._load_questions_from_json()
+        self.current_job = None
 
         logger.debug("AIHawkEasyApplier initialized successfully")
 
@@ -124,6 +126,8 @@ class AIHawkEasyApplier:
             recruiter_link = self._get_job_recruiter()
             job.set_recruiter_link(recruiter_link)
             logger.debug(f"Recruiter link set: {recruiter_link}")
+
+            self.current_job = job
 
             logger.debug("Attempting to click 'Easy Apply' button")
             actions = ActionChains(self.driver)
@@ -231,7 +235,12 @@ class AIHawkEasyApplier:
             except NoSuchElementException:
                 logger.debug("See more button not found, skipping")
 
-            description = self.driver.find_element(By.CLASS_NAME, 'jobs-description-content__text').text
+            try:
+                description = self.driver.find_element(By.CLASS_NAME, 'jobs-description-content__text').text
+            except NoSuchElementException:
+                logger.debug("First class not found, checking for second class for premium members")
+                description = self.driver.find_element(By.CLASS_NAME, 'job-details-about-the-job-module__description').text
+
             logger.debug("Job description retrieved successfully")
             return description
         except NoSuchElementException:
@@ -348,6 +357,16 @@ class AIHawkEasyApplier:
 
         dropdown = element.find_element(By.TAG_NAME, 'select')
         select = Select(dropdown)
+        dropdown_id = dropdown.get_attribute('id')
+        if 'phoneNumber-Country' in dropdown_id:
+            country = self.resume_generator_manager.get_resume_country()
+            if country:
+                try:
+                    select.select_by_value(country)
+                    logger.debug(f"Selected phone country: {country}")
+                    return True
+                except NoSuchElementException:
+                    logger.warning(f"Country {country} not found in dropdown options")
 
         options = [option.text for option in select.options]
         logger.debug(f"Dropdown options found: {options}")
@@ -371,7 +390,6 @@ class AIHawkEasyApplier:
         if existing_answer:
             logger.debug(f"Found existing answer for question '{question_text}': {existing_answer}")
         else:
-
             logger.debug(f"No existing answer found, querying model for: {question_text}")
             existing_answer = self.gpt_answerer.answer_question_from_options(question_text, options)
             logger.debug(f"Model provided answer: {existing_answer}")
@@ -536,11 +554,11 @@ class AIHawkEasyApplier:
                     wrapped_lines = []
                     for line in text.splitlines():
 
-                        if utils.stringWidth(line, font, font_size) > max_width:
+                        if stringWidth(line, font, font_size) > max_width:
                             words = line.split()
                             new_line = ""
                             for word in words:
-                                if utils.stringWidth(new_line + word + " ", font, font_size) <= max_width:
+                                if stringWidth(new_line + word + " ", font, font_size) <= max_width:
                                     new_line += word + " "
                                 else:
                                     wrapped_lines.append(new_line.strip())
@@ -691,7 +709,10 @@ class AIHawkEasyApplier:
                 logger.debug(f"Using existing answer: {answer}")
             else:
                 if is_numeric:
-                    answer = self.gpt_answerer.answer_question_numeric(question_text)
+                    if 'how many years' in question_text:
+                        answer = 0
+                    else:
+                        answer = self.gpt_answerer.answer_question_numeric(question_text)
                     logger.debug(f"Generated numeric answer: {answer}")
                 else:
                     answer = self.gpt_answerer.answer_question_textual_wide_range(question_text)
@@ -820,6 +841,7 @@ class AIHawkEasyApplier:
     def _save_questions_to_json(self, question_data: dict) -> None:
         output_file = 'answers.json'
         question_data['question'] = self._sanitize_text(question_data['question'])
+
         logger.debug(f"Saving question data to JSON: {question_data}")
         try:
             try:
